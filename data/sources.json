@@ -1,0 +1,15 @@
+[
+  {
+    "id": "cs329a-stanford",
+    "kind": "youtube-playlist",
+    "title": "Stanford CS329A Self-Improving AI Agents",
+    "playlistId": "PLangBM27OtEA",
+    "category": "education",
+    "audiences": ["researcher", "engineer", "non-technical"],
+    "transcriptStrategy": "youtube-transcript",
+    "summaryStrategy": "llm",
+    "sourceUrls": [
+      "https://www.youtube.com/playlist?list=PLangBM27OtEA"
+    ]
+  }
+]
