@@ -1,11 +1,13 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(process.cwd());
 const SOURCES_PATH = path.join(ROOT, 'data', 'sources.json');
 const TRANSCRIPTS_ROOT = path.join(ROOT, 'content', 'transcripts');
-const YT_DLP_BIN = '/mnt/c/Projects/yt-mp3/.venv/bin/yt-dlp';
+const BIN_DIR = fileURLToPath(new URL('../../bin/', import.meta.url));
+const YT_DLP_BIN = path.join(BIN_DIR, 'yt-dlp');
 
 async function loadSources() {
   const data = JSON.parse(await fs.readFile(SOURCES_PATH, 'utf8'));
@@ -26,7 +28,8 @@ async function ensureDir(dir) {
 
 function spawnYtDlp(args) {
   return new Promise((resolve, reject) => {
-    const child = spawn(YT_DLP_BIN, args, { shell: false });
+    const child = spawn(process.platform === 'win32' ? 'python' : 'python3',
+      [YT_DLP_BIN, '--ffmpeg-location', BIN_DIR, ...args], { shell: false });
     let stdout = '';
     let stderr = '';
     child.stdout.on('data', (data) => { stdout += String(data); });
@@ -150,6 +153,10 @@ async function processSource(source) {
 }
 
 async function main() {
+  if (process.argv.includes('--check-downloader')) {
+    console.log((await spawnYtDlp(['--version'])).trim());
+    return;
+  }
   const sources = await loadSources();
   for (const source of sources) {
     await processSource(source);
